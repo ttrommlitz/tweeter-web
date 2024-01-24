@@ -62,6 +62,7 @@ const AuthenticatedRoutes = () => {
   return (
     <Routes>
       <Route element={<MainLayout />}>
+        {/* All these routes will be rendered in the parent's Outlet component */}
         <Route index element={<Navigate to="/feed" />} />
         <Route path="feed" element={<FeedScroller />} />
         <Route path="story" element={<StoryScroller />} />

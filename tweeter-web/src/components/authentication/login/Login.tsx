@@ -34,6 +34,7 @@ const Login = (props: Props) => {
 
       updateUserInfo(user, user, authToken, rememberMeRef.current);
 
+      // renders the index or originalUrl page
       if (!!props.originalUrl) {
         navigate(props.originalUrl);
       } else {

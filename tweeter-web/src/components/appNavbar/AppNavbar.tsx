@@ -22,7 +22,7 @@ const AppNavbar = () => {
 
       clearLastInfoMessage();
       clearUserInfo();
-      navigate("/login");
+      // navigate("/login");
     } catch (error) {
       displayErrorMessage(
         `Failed to log user out because of exception: ${error}`
@@ -32,6 +32,7 @@ const AppNavbar = () => {
 
   const logout = async (authToken: AuthToken): Promise<void> => {
     // Pause so we can see the logging out message. Delete when the call to the server is implemented.
+    // Eventually, replace with a call to server to change db
     await new Promise((res) => setTimeout(res, 1000));
   };
 
