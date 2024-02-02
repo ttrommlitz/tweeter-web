@@ -1,7 +1,5 @@
 import "./Register.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { useContext } from "react";
-import { UserInfoContext } from "../../userInfo/UserInfoProvider";
 import { ChangeEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
@@ -9,6 +7,7 @@ import { AuthToken, FakeData, User } from "tweeter-shared";
 import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationFields from "../AuthenticationFields";
+import useUserInfo from "../../userInfo/UserInfoHook";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -23,7 +22,7 @@ const Register = () => {
   rememberMeRef.current = rememberMe;
 
   const navigate = useNavigate();
-  const { updateUserInfo } = useContext(UserInfoContext);
+  const { updateUserInfo } = useUserInfo();
   const { displayErrorMessage } = useToastListener();
 
   const checkSubmitButtonStatus = (): boolean => {
@@ -126,7 +125,7 @@ const Register = () => {
           />
           <label htmlFor="lastNameInput">Last Name</label>
         </div>
-        <AuthenticationFields setAlias={setAlias} setPassword={setPassword}/>
+        <AuthenticationFields setAlias={setAlias} setPassword={setPassword} isBottom={false}/>
         <div className="form-floating mb-3">
           <input
             type="file"

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 interface Props {
   setAlias: React.Dispatch<React.SetStateAction<string>>;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
+  isBottom: boolean;
 }
 
 const AuthenticationFields = (props: Props) => {
@@ -19,10 +20,10 @@ const AuthenticationFields = (props: Props) => {
         />
         <label htmlFor="aliasInput">Alias</label>
       </div>
-      <div className="form-floating">
+      <div className={ `form-floating ${props.isBottom ? "mb-3" : ""}` }>
         <input
           type="password"
-          className="form-control"
+          className={ `form-control ${props.isBottom ? "bottom" : ""}` }
           id="passwordInput"
           placeholder="Password"
           onChange={(event) => props.setPassword(event.target.value)}
