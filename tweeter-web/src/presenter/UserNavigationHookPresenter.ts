@@ -1,22 +1,25 @@
 import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../service/UserService";
+import { Presenter, View } from "./Presenter";
 
-export interface UserNavigationHookView {
+export interface UserNavigationHookView extends View {
   setDisplayedUser: (user: User) => void;
-  displayErrorMessage: (message: string) => void;
 }
 
-export class UserNavigationHookPresenter {
-  private view: UserNavigationHookView;
+export class UserNavigationHookPresenter extends Presenter {
   private userService: UserService;
 
   public constructor(view: UserNavigationHookView) {
-    this.view = view;
+    super(view);
     this.userService = new UserService();
   }
 
+  protected get view(): UserNavigationHookView {
+    return super.view as UserNavigationHookView;
+  }
+
   public async navigateToUser(currentUser: User, authToken: AuthToken, target: string): Promise<void> {
-    try {
+    this.doFailureReportingOperation(async () => {
       let alias = this.extractAlias(target);
 
       let user = await this.userService.getUser(authToken!, alias);
@@ -28,9 +31,7 @@ export class UserNavigationHookPresenter {
           this.view.setDisplayedUser(user);
         }
       }
-    } catch (error) {
-      this.view.displayErrorMessage(`Failed to get user because of exception: ${error}`);
-    }
+    }, "navigate to user");
   };
 
   private extractAlias(value: string): string {

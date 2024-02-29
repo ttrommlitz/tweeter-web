@@ -1,26 +1,14 @@
-import { AuthToken, User } from "tweeter-shared";
-import { UserService } from "../service/UserService";
 import { Buffer } from "buffer";
+import { AuthenticationPresenter, AuthenticationView } from "./AuthenticationPresenter";
 
-export interface RegisterView {
+export interface RegisterView extends AuthenticationView {
   setImageUrl(url: string): void;
   setImageBytes(bytes: Uint8Array): void;
-  updateUserInfo(
-    currentUser: User,
-    displayedUser: User,
-    authToken: AuthToken,
-  ): void;
-  navigate(path: string): void;
-  displayErrorMessage(message: string): void;
 }
 
-export class RegisterPresenter {
-  private view: RegisterView;
-  private userService: UserService;
-
-  public constructor(view: RegisterView) {
-    this.view = view;
-    this.userService = new UserService();
+export class RegisterPresenter extends AuthenticationPresenter {
+  protected get view(): RegisterView {
+    return super.view as RegisterView;
   }
 
   public handleImageFile(file: File | undefined) {
@@ -55,21 +43,22 @@ export class RegisterPresenter {
     alias: string,
     password: string,
     imageBytes: Uint8Array) {
-    try {
-      let [user, authToken] = await this.userService.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes
+      this.doAuthenticationOperation(
+        async () => {
+          return this.service.register(
+            firstName,
+            lastName,
+            alias,
+            password,
+            imageBytes
+          );
+        }, () => {
+          this.view.navigate("/");
+        }
       );
+    };
 
-      this.view.updateUserInfo(user, user, authToken);
-      this.view.navigate("/");
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    }
-  };
+  protected getAuthenticationDescription(): string {
+    return "register user";
+  }
 }
