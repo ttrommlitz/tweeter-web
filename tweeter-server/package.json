@@ -1,0 +1,22 @@
+{
+  "name": "tweeter-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc",
+    "deploy": "export AWS_PROFILE=personal && npm run build && sls deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.29.4",
+    "tweeter-shared": "file:../tweeter-shared",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@kakkuk/serverless-aws-apigateway-documentation": "^1.3.0"
+  }
+}

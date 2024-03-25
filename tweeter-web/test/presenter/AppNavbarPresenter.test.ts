@@ -1,6 +1,6 @@
 import { AuthToken } from "tweeter-shared";
 import { AppNavbarPresenter, AppNavbarView } from "../../src/presenter/AppNavbarPresenter";
-import { anything, capture, instance, mock, spy, verify, when } from "ts-mockito";
+import { anything, instance, mock, spy, verify, when } from "ts-mockito";
 import { UserService } from "../../src/service/UserService";
 
 describe("AppNavBarPresenter", () => {

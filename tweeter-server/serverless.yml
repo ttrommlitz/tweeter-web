@@ -1,0 +1,326 @@
+org: ttrommlitz
+app: tweeter-server
+service: tweeter-server
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+plugins:
+  - "@kakkuk/serverless-aws-apigateway-documentation"
+
+custom:
+  documentation:
+    api:
+      info:
+        description: "Tweeter API"
+
+functions:
+  login:
+    handler: dist/lambda/LoginLambda.handler
+    events:
+      - http:
+          path: login
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Login to the application
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null   
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  register:
+    handler: dist/lambda/RegisterLambda.handler
+    events:
+      - http:
+          path: register
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Register a new user
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+  
+  logout:
+    handler: dist/lambda/LogoutLambda.handler
+    events:
+      - http:
+          path: logout
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Logout from the application
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+  
+  getUser:
+    handler: dist/lambda/GetUserLambda.handler
+    events:
+      - http:
+          path: user
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Get a user's information
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+  
+  loadMoreFeedItems:
+    handler: dist/lambda/LoadMoreFeedItemsLambda.handler
+    events:
+      - http:
+          path: loadmorefeeditems
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Paginated endpoint to load more feed items
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  loadMoreStoryItems:
+    handler: dist/lambda/LoadMoreStoryItemsLambda.handler
+    events:
+      - http:
+          path: loadmorestoryitems
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Paginated endpoint to load more story items
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  loadMoreFollowees:
+    handler: dist/lambda/LoadMoreFolloweesLambda.handler
+    events:
+      - http:
+          path: loadmorefollowees
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Paginated endpoint to load more followees
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  loadMoreFollowers:
+    handler: dist/lambda/LoadMoreFollowersLambda.handler
+    events:
+      - http:
+          path: loadmorefollowers
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Paginated endpoint to load more followers
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  postStatus:
+    handler: dist/lambda/PostStatusLambda.handler
+    events:
+      - http:
+          path: post
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Post a new status
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  getIsFollowerStatus:
+    handler: dist/lambda/GetIsFollowerStatusLambda.handler
+    events:
+      - http:
+          path: isfollower
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Check if a user is following another user
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  getFolloweesCount:
+    handler: dist/lambda/GetFolloweesCountLambda.handler
+    events:
+      - http:
+          path: followeescount
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Get the number of followees for a user
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+  
+  getFollowersCount:
+    handler: dist/lambda/GetFollowersCountLambda.handler
+    events:
+      - http:
+          path: followerscount
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Get the number of followers for a user
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+
+  follow:
+    handler: dist/lambda/FollowLambda.handler
+    events:
+      - http:
+          path: follow
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Follow a user
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
+            
+  unfollow:
+    handler: dist/lambda/UnfollowLambda.handler
+    events:
+      - http:
+          path: unfollow
+          method: post
+          integration: lambda
+          cors: true
+          documentation:
+            description: Unfollow a user
+          request:
+            passThrough: WHEN_NO_MATCH
+            template:
+              application/json: null
+              application/x-www-form-urlencoded: null
+          response:
+            statusCodes:
+              200:
+                pattern: ''
+              400:
+                pattern: '[\s\S]*\[400\][\s\S]*'
