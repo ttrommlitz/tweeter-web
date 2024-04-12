@@ -1,6 +1,7 @@
 import { PostStatusRequest } from "tweeter-shared";
 import { TweeterResponse } from "tweeter-shared/dist/model/net/Response";
 import { StatusService } from "../model/service/StatusService";
+import { Factory } from "../model/service/Factory";
 
 exports.handler = async (event: JSON): Promise<TweeterResponse> => {
   console.log('EVENT: ', event)
@@ -9,7 +10,7 @@ exports.handler = async (event: JSON): Promise<TweeterResponse> => {
   let response: TweeterResponse;
 
   try {
-    await new StatusService().postStatus(request.authToken, request.newStatus)
+    await new StatusService(new Factory()).postStatus(request.authToken, request.newStatus)
     response = new TweeterResponse(true);
   } catch (error) {
     throw new Error(`[400] bad request: ${error}`);

@@ -1,5 +1,6 @@
 import { GetUserRequest, GetUserResponse } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
+import { Factory } from "../model/service/Factory";
 
 exports.handler = async (event: JSON): Promise<GetUserResponse> => {
   console.log("EVENT: ", event)
@@ -8,7 +9,7 @@ exports.handler = async (event: JSON): Promise<GetUserResponse> => {
   let response: GetUserResponse;
 
   try {
-    const user = await new UserService().getUser(request.authToken, request.alias);
+    const user = await new UserService(new Factory()).getUser(request.authToken, request.alias);
 
   if (!user) {
     response = new GetUserResponse(

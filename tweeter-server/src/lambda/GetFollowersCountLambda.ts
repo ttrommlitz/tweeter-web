@@ -1,5 +1,6 @@
 import { GetFollowersCountResponse, GetFollowsCountRequest } from "tweeter-shared";
 import { FollowService } from "../model/service/FollowService";
+import { Factory } from "../model/service/Factory";
 
 exports.handler = async (event: JSON): Promise<GetFollowersCountResponse> => {
   console.log('EVENT: ', event)
@@ -8,7 +9,7 @@ exports.handler = async (event: JSON): Promise<GetFollowersCountResponse> => {
   let response: GetFollowersCountResponse
 
   try {
-    const followersCount = await new FollowService().getFollowersCount(request.authToken, request.user)
+    const followersCount = await new FollowService(new Factory()).getFollowersCount(request.authToken, request.user)
   
     response = new GetFollowersCountResponse(followersCount, true)
   } catch (error) {

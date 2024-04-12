@@ -418,17 +418,20 @@ export class GetFollowsCountRequest extends TweeterRequest {
 
 export class FollowActionRequest extends TweeterRequest {
   authToken: AuthToken
+  currentUser: User
   userToActOn: User
 
-  constructor(authToken: AuthToken, userToActOn: User) {
+  constructor(authToken: AuthToken, currentUser: User, userToActOn: User) {
     super()
     this.authToken = authToken
+    this.currentUser = currentUser
     this.userToActOn = userToActOn
   }
 
   static fromJSON(json: JSON): FollowActionRequest {
     interface FollowActionRequestJson {
       authToken: JSON
+      currentUser: JSON
       userToActOn: JSON
     }
     const jsonObject: FollowActionRequestJson = 
@@ -445,6 +448,17 @@ export class FollowActionRequest extends TweeterRequest {
       )
     }
 
+    const deserializedCurrentUser = User.fromJson(
+      JSON.stringify(jsonObject.currentUser)
+    )
+
+    if (deserializedCurrentUser === null) {
+      throw new Error(
+        "FollowActionRequest, could not deserialize user with json:\n" +
+          JSON.stringify(jsonObject.currentUser)
+      )
+    }
+
     const deserializedUserToActOn = User.fromJson(
       JSON.stringify(jsonObject.userToActOn)
     )
@@ -458,6 +472,7 @@ export class FollowActionRequest extends TweeterRequest {
 
     return new FollowActionRequest(
       deserializedToken,
+      deserializedCurrentUser,
       deserializedUserToActOn
     )
   }

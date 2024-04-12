@@ -1,5 +1,6 @@
 import { LoadMoreUserItemsRequest, LoadMoreUserItemsResponse } from "tweeter-shared";
 import { FollowService } from "../model/service/FollowService";
+import { Factory } from "../model/service/Factory";
 
 exports.handler = async (event: JSON): Promise<LoadMoreUserItemsResponse> => {
   console.log("EVENT: ", event)
@@ -8,7 +9,7 @@ exports.handler = async (event: JSON): Promise<LoadMoreUserItemsResponse> => {
   let response: LoadMoreUserItemsResponse;
 
   try {
-    const [userItems, hasMoreItems] = await new FollowService().loadMoreFollowees(
+    const [userItems, hasMoreItems] = await new FollowService(new Factory()).loadMoreFollowees(
       request.authToken, request.user, request.pageSize, request.lastItem
     );
 

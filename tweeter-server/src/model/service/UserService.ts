@@ -1,6 +1,14 @@
-import { User, AuthToken, FakeData } from "tweeter-shared";
+import { User, AuthToken } from "tweeter-shared";
+import { hash, genSalt } from "bcryptjs";
+import { FactoryInterface } from "./Factory";
+import { isValidPassword } from "./helpers";
+import { Service } from "./Service";
 
-export class UserService {
+export class UserService extends Service {
+  constructor(factory: FactoryInterface) {
+    super(factory);
+  }
+  
   public async register (
     firstName: string,
     lastName: string,
@@ -8,36 +16,62 @@ export class UserService {
     password: string,
     imageStringBase64: string
   ): Promise<[User, AuthToken]> {
-    let user = FakeData.instance.firstUser;
+    const imageUrl = await this.s3Dao.uploadImage(alias, imageStringBase64)
 
-    if (user === null) {
-      throw new Error("Invalid registration");
-    }
+    const user: User = new User(
+      firstName,
+      lastName,
+      alias,
+      imageUrl
+    )
+    
+    const saltRounds = 10
+    const salt = await genSalt(saltRounds)
+    const hashedPassword = await hash(password, salt)
 
-    return [user, FakeData.instance.authToken];
+    await this.userDao.putUser(user, hashedPassword)
+
+    const authToken = AuthToken.Generate()
+    await this.authTokenDao.putAuthtoken(authToken)
+
+    // if (user === null) {
+    //   throw new Error("Invalid registration");
+    // }
+
+    return [user, authToken];
   };
-  
+
   public async login (
     alias: string,
     password: string
   ): Promise<[User, AuthToken]> {
-    let user = FakeData.instance.firstUser;
+    const user = await this.userDao.getUser(alias)
+    const hashedPassword = await this.userDao.getHashedPassword(alias)
 
-    if (user === null) {
+    const correctPassword = await isValidPassword(password, hashedPassword)
+    if (user === null || !correctPassword) {
       throw new Error("Invalid alias or password");
     }
 
-    return [user, FakeData.instance.authToken];
+    const authToken = AuthToken.Generate()
+    await this.authTokenDao.putAuthtoken(authToken)
+
+    return [user, authToken];
   };
 
   public async logout(authToken: AuthToken): Promise<void> {
-    // change db
+    await this.verifyToken(authToken)
+    
+    await this.authTokenDao.deleteAuthtoken(authToken)
   };
 
   public async getUser (
     authToken: AuthToken,
     alias: string
   ): Promise<User | null> {
-    return FakeData.instance.findUserByAlias(alias);
+    await this.verifyToken(authToken)
+
+    const user = await this.userDao.getUser(alias)
+    return user
   };
 }

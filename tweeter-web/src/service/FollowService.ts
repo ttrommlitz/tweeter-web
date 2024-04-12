@@ -73,9 +73,10 @@ export class FollowService {
 
   public async follow (
     authToken: AuthToken,
+    currentUser: User,
     userToFollow: User
   ) {
-    const request = new FollowActionRequest(authToken, userToFollow)
+    const request = new FollowActionRequest(authToken, currentUser, userToFollow)
     await this.serverFacade.follow(request);
 
     let followersCount = await this.getFollowersCount(authToken, userToFollow);
@@ -86,9 +87,10 @@ export class FollowService {
 
   public async unfollow (
     authToken: AuthToken,
+    currentUser: User,
     userToUnfollow: User
   ) {
-    const request = new FollowActionRequest(authToken, userToUnfollow)
+    const request = new FollowActionRequest(authToken, currentUser, userToUnfollow)
     await this.serverFacade.unfollow(request);
 
     let followersCount = await this.getFollowersCount(authToken, userToUnfollow);

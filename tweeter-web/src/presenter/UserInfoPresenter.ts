@@ -58,12 +58,13 @@ export class UserInfoPresenter extends Presenter {
     }, "get followers count");
   };
 
-  public async followDisplayedUser(authToken: AuthToken, displayedUser: User) {
+  public async followDisplayedUser(authToken: AuthToken, currentUser: User, displayedUser: User) {
     this.doFailureReportingOperation(async () => {
       this.view.displayInfoMessage(`Adding ${displayedUser!.name} to followers...`, 0);
 
       let [followersCount, followeesCount] = await this.followService.follow(
         authToken!,
+        currentUser!,
         displayedUser!
       );
 
@@ -75,7 +76,7 @@ export class UserInfoPresenter extends Presenter {
     }, "follow user");
   };
  
-  public async unfollowDisplayedUser(authToken: AuthToken, displayedUser: User) {
+  public async unfollowDisplayedUser(authToken: AuthToken, currentUser: User, displayedUser: User) {
     this.doFailureReportingOperation(async () => {
       this.view.displayInfoMessage(
         `Removing ${displayedUser!.name} from followers...`,
@@ -84,6 +85,7 @@ export class UserInfoPresenter extends Presenter {
 
       let [followersCount, followeesCount] = await this.followService.unfollow(
         authToken!,
+        currentUser!,
         displayedUser!
       );
 

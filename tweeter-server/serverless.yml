@@ -6,9 +6,27 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs18.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::tweeter-profile-picture-bucket-340/*"
 
 plugins:
   - "@kakkuk/serverless-aws-apigateway-documentation"
+  - serverless-iam-roles-per-function
 
 custom:
   documentation:
@@ -324,3 +342,120 @@ functions:
                 pattern: ''
               400:
                 pattern: '[\s\S]*\[400\][\s\S]*'
+
+resources:
+  Resources:
+    FollowsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: follows
+        AttributeDefinitions:
+          - AttributeName: follower_handle
+            AttributeType: S
+          - AttributeName: followee_handle
+            AttributeType: S
+        KeySchema:
+          - AttributeName: follower_handle
+            KeyType: HASH # partition key
+          - AttributeName: followee_handle
+            KeyType: RANGE # sort key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: follows_index
+            KeySchema:
+              - AttributeName: followee_handle
+                KeyType: HASH
+              - AttributeName: follower_handle
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+
+    UserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: User
+        AttributeDefinitions:
+          - AttributeName: alias
+            AttributeType: S
+        KeySchema:
+          - AttributeName: alias
+            KeyType: HASH # partition key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    FeedTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Feed
+        AttributeDefinitions:
+          - AttributeName: receiverAlias
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: receiverAlias
+            KeyType: HASH # partition key
+          - AttributeName: timestamp
+            KeyType: RANGE # sort key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    StoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Story
+        AttributeDefinitions:
+          - AttributeName: senderAlias
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: senderAlias
+            KeyType: HASH # partition key
+          - AttributeName: timestamp
+            KeyType: RANGE # sort key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    
+    AuthtokenTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Authtoken
+        AttributeDefinitions:
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH # partition key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    ProfilePictureBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: tweeter-profile-picture-bucket-340
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+    
+    ProfilePictureBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref ProfilePictureBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: "s3:GetObject"
+              Resource: !Sub "arn:aws:s3:::${ProfilePictureBucket}/*"

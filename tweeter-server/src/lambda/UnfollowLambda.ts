@@ -1,6 +1,7 @@
 import { FollowActionRequest } from "tweeter-shared";
 import { TweeterResponse } from "tweeter-shared/dist/model/net/Response";
 import { FollowService } from "../model/service/FollowService";
+import { Factory } from "../model/service/Factory";
 
 exports.handler = async (event: JSON): Promise<TweeterResponse> => {
   console.log('EVENT: ', event)
@@ -9,7 +10,7 @@ exports.handler = async (event: JSON): Promise<TweeterResponse> => {
   let response: TweeterResponse
 
   try {
-    await new FollowService().unfollow(request.authToken, request.userToActOn)
+    await new FollowService(new Factory()).unfollow(request.authToken, request.currentUser, request.userToActOn)
     response = new TweeterResponse(true);
   } catch (error) {
     throw new Error(`[400] ${error}`);

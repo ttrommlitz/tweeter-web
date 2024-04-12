@@ -47,7 +47,7 @@ const UserInfo = () => {
   ): Promise<void> => {
     event.preventDefault();
 
-    await presenter.followDisplayedUser(authToken!, displayedUser!);
+    await presenter.followDisplayedUser(authToken!,currentUser!, displayedUser!);
   };
 
   const unfollowDisplayedUser = async (
@@ -55,7 +55,7 @@ const UserInfo = () => {
   ): Promise<void> => {
     event.preventDefault();
 
-    await presenter.unfollowDisplayedUser(authToken!, displayedUser!);
+    await presenter.unfollowDisplayedUser(authToken!, currentUser!, displayedUser!);
   };
 
   return (
