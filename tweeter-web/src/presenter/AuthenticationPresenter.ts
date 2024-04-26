@@ -28,7 +28,7 @@ export abstract class AuthenticationPresenter extends Presenter {
   }
 
   protected async doAuthenticationOperation(operation: () => Promise<[User, AuthToken]>, navigate: () => void) {
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       const [user, authToken] = await operation();
       this.view.updateUserInfo(user, user, authToken);
       navigate();

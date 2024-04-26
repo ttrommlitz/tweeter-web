@@ -7,6 +7,9 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-1
+  environment:
+    POST_STATUS_QUEUE_URL: !Ref PostStatusQueue
+    UPDATE_FEEDS_QUEUE_URL: !Ref UpdateFeedsQueue
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -23,7 +26,14 @@ provider:
         - s3:PutObject
         - s3:GetObject
       Resource: "arn:aws:s3:::tweeter-profile-picture-bucket-340/*"
-
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+      Resource: !GetAtt PostStatusQueue.Arn
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+      Resource: !GetAtt UpdateFeedsQueue.Arn
 plugins:
   - "@kakkuk/serverless-aws-apigateway-documentation"
   - serverless-iam-roles-per-function
@@ -343,6 +353,20 @@ functions:
               400:
                 pattern: '[\s\S]*\[400\][\s\S]*'
 
+  postUpdateFeedMessages:
+    handler: dist/lambda/PostUpdateFeedMessagesLambda.handler
+    timeout: 120 # 2 minutes
+    events:
+      - sqs:
+          arn: !GetAtt PostStatusQueue.Arn
+  
+  updateFeeds:
+    handler: dist/lambda/UpdateFeedsLambda.handler
+    timeout: 120 # 2 minutes
+    events:
+      - sqs:
+          arn: !GetAtt UpdateFeedsQueue.Arn
+
 resources:
   Resources:
     FollowsTable:
@@ -459,3 +483,13 @@ resources:
               Principal: "*"
               Action: "s3:GetObject"
               Resource: !Sub "arn:aws:s3:::${ProfilePictureBucket}/*"
+
+    PostStatusQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: PostStatusQueue
+    
+    UpdateFeedsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: UpdateFeedsQueue

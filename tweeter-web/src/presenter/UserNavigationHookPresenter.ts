@@ -19,7 +19,7 @@ export class UserNavigationHookPresenter extends Presenter {
   }
 
   public async navigateToUser(currentUser: User, authToken: AuthToken, target: string): Promise<void> {
-    this.doFailureReportingOperation(async () => {
+    await this.doFailureReportingOperation(async () => {
       let alias = this.extractAlias(target);
 
       let user = await this.userService.getUser(authToken!, alias);
